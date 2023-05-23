@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spotify Recommendations - Results</title>
+</head>
+<body>
+    <h1>Spotify Recommendations</h1>
+    <h2>Track: {{ track_name }} by {{ artist_name }}</h2>
+    <h3>Recommendations:</h3>
+    {% for recommendation in recommendations %}
+        <p>{{ recommendation['name'] }} by: {{ recommendation['artists'] }}</p>
+        <p>Track Genres: {{ recommendation['genres'] }}</p>
+    {% endfor %}
+</body>
+</html>
