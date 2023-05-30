@@ -6,6 +6,8 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="5ef3272dcd5e49598a655d
                                                redirect_uri="http://localhost:8080/callback"
                                               ))
 
+app = Flask(__name__)
+
 @app.route("/callback", methods=['GET', 'POST'])
 def callback():
     code = request.args.get('code')
@@ -13,9 +15,7 @@ def callback():
                             client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",
                             redirect_uri="http://localhost:8080/callback")  # Changed redirect_uri to /callback
     token_info = sp_oauth.get_access_token(code)
-    access_token = token_info['access_token']
-                              
-app = Flask(__name__)
+    access_token = token_info['access_token']                            
 
 import logging
 
