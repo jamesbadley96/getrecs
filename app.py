@@ -1,31 +1,30 @@
 from flask import Flask, render_template, request
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+app = Flask(__name__)
 
 sp_oauth = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
                         client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",                                            
                         redirect_uri="http://localhost:8080/callback"
                         )
-app = Flask(__name__)
 
 @app.route("/callback", methods=['GET', 'POST'])
 def callback():
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
-    access_token = token_info['access_token']
-   
-    auth_manager = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
-                                client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",
-                                redirect_uri="http://localhost:8080/callback",
-                                scope="user-library-read",
-                                cache_path="token_info.json")
-    global sp
-    sp = spotipy.Spotify(auth_manager=auth_manager)                           
+    access_token = token_info['access_token']                            
 
-import logging
+    # Create Spotify client with this token
+    sp = spotipy.Spotify(auth_manager=sp_oauth)
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    # Maybe save this Spotify client to a database or session?
+    # This part depends on the rest of your application
 
+    return "Callback done"  # Or however you want to handle this route
 
 def get_track_id(track_name, artist_name):
     logging.info('Getting track ID for track "%s" by artist "%s"', track_name, artist_name)
