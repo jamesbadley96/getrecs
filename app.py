@@ -16,16 +16,27 @@ sp_oauth = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
                         redirect_uri="http://localhost:8080/callback"
                         )
 
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if 'sp' not in session:
+        auth_url = sp_oauth.get_authorize_url()
+        return flask.redirect(auth_url)
+    # rest of your code...
+
 @app.route("/callback", methods=['GET', 'POST'])
 def callback():
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
-    access_token = token_info['access_token']
+    access_token = token_info['access_token']                            
 
-    # Save the access_token to the session
-    session['access_token'] = access_token
+    # Create Spotify client with this token
+    sp = spotipy.Spotify(auth=access_token)
 
-    return "Callback done"  # Or however you want to handle this route
+    # Save the Spotify client to the session
+    session['sp'] = sp
+
+    return flask.redirect('/')  # redirect back to the main page
+
 
 def get_track_id(track_name, artist_name):
     logging.info('Getting track ID for track "%s" by artist "%s"', track_name, artist_name)
