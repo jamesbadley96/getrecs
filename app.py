@@ -8,6 +8,11 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="5ef3272dcd5e49598a655d
 
 app = Flask(__name__)
 
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+
+
 def get_track_id(track_name, artist_name):
     logging.info('Getting track ID for track "%s" by artist "%s"', track_name, artist_name)
     results = sp.search(q=f'track:{track_name} artist:{artist_name}', type='track')
