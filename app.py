@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request, session
-from flask_session import Session
+from flask import Flask, render_template, request
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import logging
@@ -8,42 +7,29 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 app = Flask(__name__)
 
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
-
 sp_oauth = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
                         client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",
                         redirect_uri="http://localhost:8080/callback"
                         )
 
+access_token = None
+
 @app.route("/callback", methods=['GET', 'POST'])
 def callback():
+    global access_token
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     access_token = token_info['access_token']                            
-
-    # Create Spotify client with this token
-    sp = spotipy.Spotify(auth=access_token)
-
-    # Save the Spotify client to the session
-    session['sp'] = sp
-
-    return flask.redirect('/')  # redirect back to the main page
-
+    return flask.redirect('/')
 
 def get_track_id(track_name, artist_name):
     logging.info('Getting track ID for track "%s" by artist "%s"', track_name, artist_name)
-
-    # Retrieve the access_token from the session
-    access_token = session.get('access_token', None)
-
+    
     if access_token is None:
-        logging.error("Access token not found in session.")
+        logging.error("Access token not found.")
         return None
 
-    # Create a new Spotify client with the access token
     sp = spotipy.Spotify(auth=access_token)
-
     results = sp.search(q=f'track:{track_name} artist:{artist_name}', type='track')
     items = results['tracks']['items']
     if not items:
@@ -55,20 +41,17 @@ def get_track_id(track_name, artist_name):
 
 def get_recommendations(track_id):
     logging.info('Getting recommendations for track ID: %s', track_id)
-
-    # Retrieve the access_token from the session
-    access_token = session.get('access_token', None)
-
+    
     if access_token is None:
-        logging.error("Access token not found in session.")
+        logging.error("Access token not found.")
         return None
 
-    # Create a new Spotify client with the access token
     sp = spotipy.Spotify(auth=access_token)
 
     if track_id is None:
         logging.warning("Track ID is None. Can't get recommendations.")
         return None
+
     results = sp.recommendations(seed_tracks=[track_id])
     track_info = []
     for track in results['tracks']:
