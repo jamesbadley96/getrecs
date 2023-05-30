@@ -12,7 +12,7 @@ def callback():
                             client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",
                             redirect_uri="http://localhost:8080/callback")  # Changed redirect_uri to /callback
     token_info = sp_oauth.get_access_token(code)
-    access_token = token_info['access_token'
+    access_token = token_info['access_token']
                               
 app = Flask(__name__)
 
