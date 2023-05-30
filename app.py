@@ -1,21 +1,26 @@
 from flask import Flask, render_template, request
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
-                                               client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",                                            
-                                               redirect_uri="http://localhost:8080/callback"
-                                              ))
 
+sp_oauth = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
+                        client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",                                            
+                        redirect_uri="http://localhost:8080/callback"
+                        )
 app = Flask(__name__)
 
 @app.route("/callback", methods=['GET', 'POST'])
 def callback():
     code = request.args.get('code')
-    sp_oauth = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
-                            client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",
-                            redirect_uri="http://localhost:8080/callback")  # Changed redirect_uri to /callback
     token_info = sp_oauth.get_access_token(code)
-    access_token = token_info['access_token']                            
+    access_token = token_info['access_token']
+   
+    auth_manager = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
+                                client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",
+                                redirect_uri="http://localhost:8080/callback",
+                                scope="user-library-read",
+                                cache_path="token_info.json")
+    global sp
+    sp = spotipy.Spotify(auth_manager=auth_manager)                           
 
 import logging
 
