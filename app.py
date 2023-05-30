@@ -9,19 +9,20 @@ sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="5ef3272dcd5e49598a655d
 app = Flask(__name__)
 
 def get_track_id(track_name, artist_name):
-    """Search for a track by name and artist, and return its Spotify ID."""
+    logging.info('Getting track ID for track "%s" by artist "%s"', track_name, artist_name)
     results = sp.search(q=f'track:{track_name} artist:{artist_name}', type='track')
     items = results['tracks']['items']
     if not items:
-        print("Can't find track:", track_name, "by artist:", artist_name)
+        logging.warning("Can't find track: %s by artist: %s", track_name, artist_name)
         return None
     else:
-        return items[0]['id']  # return the id of the first match
+        logging.info('Found track ID: %s', items[0]['id'])
+        return items[0]['id']      
 
 def get_recommendations(track_id):
-    """Get recommendations based on a track ID."""
+    logging.info('Getting recommendations for track ID: %s', track_id)
     if track_id is None:
-        print("Track ID is None. Can't get recommendations.")
+        logging.warning("Track ID is None. Can't get recommendations.")
         return None
     results = sp.recommendations(seed_tracks=[track_id])
     track_info = []
@@ -29,6 +30,7 @@ def get_recommendations(track_id):
         artist_names = ', '.join([artist['name'] for artist in track['artists']])
         genres = ', '.join(sp.artist(track['artists'][0]['id'])['genres'])
         track_info.append({'name': track['name'], 'artists': artist_names, 'genres': genres})
+    logging.info('Fetched recommendations successfully.')
     return track_info
 
 
