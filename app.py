@@ -16,13 +16,6 @@ sp_oauth = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
                         redirect_uri="http://localhost:8080/callback"
                         )
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if 'sp' not in session:
-        auth_url = sp_oauth.get_authorize_url()
-        return flask.redirect(auth_url)
-    # rest of your code...
-
 @app.route("/callback", methods=['GET', 'POST'])
 def callback():
     code = request.args.get('code')
