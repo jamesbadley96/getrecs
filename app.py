@@ -2,8 +2,9 @@ from flask import Flask, render_template, request
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 sp = spotipy.Spotify(auth_manager=SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
-                                               client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f"                                             
-                                               ))
+                                               client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",                                            
+                                               redirect_uri="http://localhost:8080/callback"
+                                              ))
 
 @app.route("/callback", methods=['GET', 'POST'])
 def callback():
