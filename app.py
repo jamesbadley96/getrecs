@@ -7,10 +7,11 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 app = Flask(__name__)
 
-sp_oauth = SpotifyOAuth(client_id="5ef3272dcd5e49598a655deb26b81aeb",
-                        client_secret="f6b712b3f7c1407396dc3cc2ed9f0e5f",
-                        redirect_uri="http://localhost:8080/callback"
-                        )
+from spotipy.oauth2 import SpotifyClientCredentials
+
+sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id="5edd206738d347a0bc47b914ba31b4e9",
+                                               client_secret="abb57184fccc40089f7dc14ccb5451b1"
+                                               ))
 
 access_token = None
 
